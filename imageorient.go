@@ -3,7 +3,6 @@
 // EXIF orientation tag (if present).
 //
 // See also: http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
-//
 package imageorient
 
 import (
@@ -24,7 +23,7 @@ const maxBufLen = 1 << 20
 // Decode decodes an image and changes its orientation
 // according to the EXIF orientation tag (if present).
 func Decode(r io.Reader) (image.Image, string, error) {
-	orientation, r := getOrientation(r)
+	orientation, r := GetOrientation(r)
 
 	img, format, err := image.Decode(r)
 	if err != nil {
@@ -41,7 +40,7 @@ func Decode(r io.Reader) (image.Image, string, error) {
 // the color model of the decoded image may be different if the
 // orientation-related transformation is needed.
 func DecodeConfig(r io.Reader) (image.Config, string, error) {
-	orientation, r := getOrientation(r)
+	orientation, r := GetOrientation(r)
 
 	cfg, format, err := image.DecodeConfig(r)
 	if err != nil {
@@ -55,9 +54,9 @@ func DecodeConfig(r io.Reader) (image.Config, string, error) {
 	return cfg, format, nil
 }
 
-// getOrientation returns the EXIF orientation tag from the given image
+// GetOrientation returns the EXIF orientation tag from the given image
 // and a new io.Reader with the same state as the original reader r.
-func getOrientation(r io.Reader) (int, io.Reader) {
+func GetOrientation(r io.Reader) (int, io.Reader) {
 	buf := new(bytes.Buffer)
 	tr := io.TeeReader(io.LimitReader(r, maxBufLen), buf)
 	orientation := readOrientation(tr)
